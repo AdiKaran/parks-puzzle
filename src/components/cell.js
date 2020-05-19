@@ -1,8 +1,7 @@
 import React, {Component} from 'react';
 
 import {Button} from '@material-ui/core' ;
-import { MuiThemeProvider } from "@material-ui/core/styles";
-import{themeRed,themeDeepPurple,themeIndigo} from '../buttonThemes' ;
+
 
 export default class Cell extends Component {
     constructor(props){
@@ -25,21 +24,19 @@ export default class Cell extends Component {
     render(){
         return (
           <div>
-            <MuiThemeProvider theme={themeRed}>
-                <Button
+              <Button
                 style={{
-                    maxWidth: "4em",
-                    maxHeight: "4em",
-                    minWidth: "4em",
-                    minHeight: "4em",
+                  maxWidth: "4em",
+                  maxHeight: "4em",
+                  minWidth: "4em",
+                  minHeight: "4em",
                 }}
                 variant="contained"
                 onClick={this.handleClick}
-                color='primary'
-                >
+                color="primary"
+              >
                 {this.state.fill}
-                </Button>
-            </MuiThemeProvider>
+              </Button>
           </div>
         );
     }

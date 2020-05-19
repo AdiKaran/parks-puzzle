@@ -5,39 +5,43 @@ import Cell from './cell';
 // import {ButtonGroup} from '@material-ui/core'
 
 // Colors
-import red from "@material-ui/core/colors/red";
-import deepPurple from "@material-ui/core/colors/deepPurple";
-import indigo from "@material-ui/core/colors/indigo";
-import cyan from "@material-ui/core/colors/cyan";
-import teal from "@material-ui/core/colors/teal";
-import lime from "@material-ui/core/colors/lime";
-import brown from "@material-ui/core/colors/brown";
-import blueGrey from "@material-ui/core/colors/blueGrey";
-import lightGreen from "@material-ui/core/colors/lightGreen";
-import amber from "@material-ui/core/colors/amber";
-// 
+import { ThemeProvider, MuiThemeProvider } from "@material-ui/core/styles";
+import {
+  themeRed,
+  themeDeepPurple,
+  themeIndigo,
+  themeCyan,
+  themeTeal,
+  themeLime,
+  themeBrown,
+  themeBlueGrey,
+  themeLightGreen,
+  themeAmber,
+} from "../buttonThemes";
+
+const colors = [
+  themeRed,
+  themeDeepPurple,
+  themeIndigo,
+  themeCyan,
+  themeTeal,
+  themeLime,
+  themeBrown,
+  themeBlueGrey,
+  themeLightGreen,
+  themeAmber,
+];
 
 export default class Board extends Component{
-    constructor(props){
-        super(props);
-        // Hardcoded 10 colors
-        this.colors =[ red[400],
-                    deepPurple[400],
-                    indigo[400],
-                    cyan[400],
-                    teal[400],
-                    lime[400],
-                    brown[400],
-                    blueGrey[400],
-                    lightGreen[400],
-                    amber[400],             
-        ]
-    }
+    // constructor(props){
+    //     super(props);
+    // }
 
     render(){
+        console.log(this.renderBoard().toString());
         return(
         <Container>
-            {this.renderBoard(this.props.dimension)}            
+            {this.renderBoard()}            
         </Container>
     )
     }
@@ -56,14 +60,20 @@ export default class Board extends Component{
     }
 
     createBoard(){
-        // Throw error if size is too large
+        // TODO:Throw error if size is too large
         let park = this.newPark() ;
         let puzzle = park.puzzle ;
         let boardArr = []
         for(let row of puzzle){
             let rowArr = []
-            for(let color of row){
-                rowArr.push(<Cell color={this.colors[color]}/>)                
+            for(let color_id of row){
+                rowArr.push(
+                  <ThemeProvider theme={colors[color_id]}>
+                    <MuiThemeProvider theme={colors[color_id]}>
+                      <Cell/>
+                    </MuiThemeProvider>
+                  </ThemeProvider>
+                );                
             }
             boardArr.push(rowArr)
         }
