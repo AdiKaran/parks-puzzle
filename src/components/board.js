@@ -33,28 +33,25 @@ const colors = [
 ];
 
 export default class Board extends Component{
-    // constructor(props){
-    //     super(props);
-    // }
 
     render(){
-        console.log(this.renderBoard().toString());
-        return(
-        <Container>
-            {this.renderBoard()}            
-        </Container>
-    )
+        return (
+          <Container>
+            <table key='board'>
+              <tbody>{this.renderBoard()}</tbody>
+            </table>
+          </Container>
+        );
     }
 
     newPark(){
         let park = {
                 size:3,
                 puzzle:[
-                    [1,2,3],
-                    [2,1,3],
-                    [3,2,1]
+                    [0,1,2],
+                    [1,0,2],
+                    [2,1,0]
                 ]
-
             }
         return(park) ;
     }
@@ -81,14 +78,18 @@ export default class Board extends Component{
     }
 
     renderBoard(size){
+        let dataCount = 0;
+        let rowCount = 0;
         let boardArr = this.createBoard() ;
         let board = [] ;
         for(let rowList of boardArr){
             let row = []
             for(let cell of rowList){
-                row.push(<td> {cell} </td>)                
+                row.push(<td key={dataCount}> {cell} </td>);  
+                dataCount++ ;          
             }
-            board.push(<tr>{row}</tr>)
+            board.push(<tr key={"row" + rowCount.toString(10)}>{row}</tr>);
+            rowCount++;
         }
         return board
     }
