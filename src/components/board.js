@@ -46,10 +46,10 @@ Peers:{A1:[Cells sharing a row, column or park with A1]}
 export default class Board extends Component{
     constructor(props){
         super(props) ;
-        this.state={
-            rows : [],
-            trees : [],
-        }
+        // this.state={
+        //     rows : [],
+        //     trees : [],
+        // }
         let park = this.newPark();
         let json,rows, cols, parks, peers ;
         ({json,rows,cols,parks,peers} = this.parsePuzzle(park));
@@ -58,6 +58,8 @@ export default class Board extends Component{
         this.cols = cols ;
         this.parks = parks ;
         this.peers = peers ;
+
+        this.state = this.initialState(this.json) ;
     }
 
     render(){
@@ -69,38 +71,44 @@ export default class Board extends Component{
           </Container>
         );
     }
-    cross(A,B){
-        let result = [];
-        for(let a of A){
-            for(let b of B){
-                result.push([a,b]);
+
+    newPark(){
+        let park = {
+                size:3,
+                puzzle:[
+                    [0,1,2],
+                    [1,0,2],
+                    [2,0,1],
+                ]
             }
-        }
-        return(result);
-    }
-    arrayEquals(A,B){
-        if (A === B) return true;
-        for (var i = 0; i < A.length; i++) {
-          if (A[i] !== B[i]) return false;
-        }
-        return true;
+        return(park) ;
     }
 
-    unitContains(A,b){
-        for(let a of A){
-            if(this.arrayEquals(a,b)){
-                return true;
-            }            
+    initialState(json){
+        let size, puzzle, result ;
+        ({ size, puzzle } = json);
+        result = {rows: [], trees:[]}
+        for(let i = 0; i<size; i++){
+            let row = {cols: [], index: i}
+            for(let j =0; j<size; j++){
+                let col ={
+                    row: i,
+                    col:j,
+                    park: puzzle[i][j],
+                    value:'',
+                };
+                row.cols.push(col);
+            }
+            result.rows.push(row);
         }
-        return false;
+        return result;        
     }
-    // Takes a json => {json:original puzzle rows: [] co]s: , parks:[], peers:{}}
+    // Takes a json => {json:original puzzle rows: [] co]s: , parks:[], peers:{}, initialState:
     parsePuzzle(json){
         let size,puzzle,rowArr = [],colArr = [],
         squares, rows=[],cols=[],parks=[],peers ={};
 
         ({size,puzzle} = json ) ;
-
         for(let i = 0; i<size;i++){
             rowArr.push(i);
             colArr.push(i);
@@ -109,7 +117,6 @@ export default class Board extends Component{
             cols.push([]);
         }
         squares = this.cross(rowArr,colArr)
-
         // Creating separate arrays for each park
         for(let i=0;i<size;i++){
             for(let j=0;j<size;j++ ){
@@ -143,32 +150,15 @@ export default class Board extends Component{
                     }
                 }
             }
-            peers[sq] = sq_peers ;
-            
+            peers[sq] = sq_peers ;            
         }
         return({json:json,rows:rows,cols:cols,parks:parks,peers:peers})
-
-
-    }
-
-    newPark(){
-        let park = {
-                size:3,
-                puzzle:[
-                    [0,1,2],
-                    [1,0,2],
-                    [2,0,1],
-                ]
-            }
-        return(park) ;
     }
 
     createBoard(){
         // TODO:Throw error if size is too large
-        let park = this.newPark() ;
-        this.parsePuzzle(park) ;
-        let puzzle = this.json.puzzle ;
-        let boardArr = []
+        let puzzle, boardArr=[];
+        ({puzzle } = this.json);
         for(let row of puzzle){
             let rowArr = []
             for(let color_id of row){
@@ -200,6 +190,33 @@ export default class Board extends Component{
             rowCount++;
         }
         return board
+    }
+
+    // Helpers 
+    cross(A,B){
+        let result = [];
+        for(let a of A){
+            for(let b of B){
+                result.push([a,b]);
+            }
+        }
+        return(result);
+    }
+    arrayEquals(A,B){
+        if (A === B) return true;
+        for (var i = 0; i < A.length; i++) {
+          if (A[i] !== B[i]) return false;
+        }
+        return true;
+    }
+
+    unitContains(A,b){
+        for(let a of A){
+            if(this.arrayEquals(a,b)){
+                return true;
+            }            
+        }
+        return false;
     }
 
     // Basic Gameplay Functions
