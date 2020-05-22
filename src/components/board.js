@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-
 import {Container} from '@material-ui/core'
 import Cell from './cell';
 // import {ButtonGroup} from '@material-ui/core'
@@ -32,7 +31,34 @@ const colors = [
   themeAmber,
 ];
 
+/*
+State: {rows: [cols:{row:0, col: 0, park:p, value:'T'}... ]
+        trees: []
+        }
+Props:
+Rows:'ABCDEF...'
+Cols:'123456...'
+Units: { A1: [ [A1,A2,A3...],[A1,B1,C1...], [Cells sharing a park with A1]   ]}
+Peers:{A1:[Cells sharing a row, column or park with A1]}
+*/
+
+
 export default class Board extends Component{
+    constructor(props){
+        super(props) ;
+        this.state={
+            rows : [],
+            trees : [],
+        }
+        let park = this.newPark();
+        let json,rows, cols, parks, peers ;
+        ({json,rows,cols,parks,peers} = this.parsePuzzle(park));
+        this.json = json ;
+        this.rows = rows ;
+        this.cols = cols ;
+        this.parks = parks ;
+        this.peers = peers ;
+    }
 
     render(){
         return (
@@ -43,6 +69,87 @@ export default class Board extends Component{
           </Container>
         );
     }
+    cross(A,B){
+        let result = [];
+        for(let a of A){
+            for(let b of B){
+                result.push([a,b]);
+            }
+        }
+        return(result);
+    }
+    arrayEquals(A,B){
+        if (A === B) return true;
+        for (var i = 0; i < A.length; i++) {
+          if (A[i] !== B[i]) return false;
+        }
+        return true;
+    }
+
+    unitContains(A,b){
+        for(let a of A){
+            if(this.arrayEquals(a,b)){
+                return true;
+            }            
+        }
+        return false;
+    }
+    // Takes a json => {json:original puzzle rows: [] co]s: , parks:[], peers:{}}
+    parsePuzzle(json){
+        let size,puzzle,rowArr = [],colArr = [],
+        squares, rows=[],cols=[],parks=[],peers ={};
+
+        ({size,puzzle} = json ) ;
+
+        for(let i = 0; i<size;i++){
+            rowArr.push(i);
+            colArr.push(i);
+            parks.push([]);
+            rows.push([]);
+            cols.push([]);
+        }
+        squares = this.cross(rowArr,colArr)
+
+        // Creating separate arrays for each park
+        for(let i=0;i<size;i++){
+            for(let j=0;j<size;j++ ){
+                parks[puzzle[i][j]].push([i,j]) ;
+                cols[j].push([i,j]);
+                rows[i].push([i,j]);
+            }
+        }
+        // Todo: optimize peer generation
+        for(let sq of squares){
+            // console.log(sq) ;
+            let sq_peers = new Set()
+            for(let row of rows){
+                if(this.unitContains(row,sq)){
+                    for(let val of row){
+                        sq_peers.add(val) ;
+                    }
+                }
+            }
+            for(let col of cols){
+                if (this.unitContains(col, sq)) {
+                  for(let val of col){
+                        sq_peers.add(val) ;
+                    }
+                }
+            }
+            for(let park of parks){
+                if (this.unitContains(park, sq)) {
+                  for(let val of park){
+                        sq_peers.add(val) ;
+                    }
+                }
+            }
+            peers[sq] = sq_peers ;
+            
+        }
+        return({json:json,rows:rows,cols:cols,parks:parks,peers:peers})
+
+
+    }
 
     newPark(){
         let park = {
@@ -50,7 +157,7 @@ export default class Board extends Component{
                 puzzle:[
                     [0,1,2],
                     [1,0,2],
-                    [2,1,0]
+                    [2,0,1],
                 ]
             }
         return(park) ;
@@ -59,7 +166,8 @@ export default class Board extends Component{
     createBoard(){
         // TODO:Throw error if size is too large
         let park = this.newPark() ;
-        let puzzle = park.puzzle ;
+        this.parsePuzzle(park) ;
+        let puzzle = this.json.puzzle ;
         let boardArr = []
         for(let row of puzzle){
             let rowArr = []
@@ -93,5 +201,8 @@ export default class Board extends Component{
         }
         return board
     }
+
+    // Basic Gameplay Functions
+
     
 }

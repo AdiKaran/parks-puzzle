@@ -7,7 +7,7 @@ export default class Parks extends Component{
     render(){
         return(
             <Container>
-            <Board dimension={10}/>
+            <Board/>
             </Container>
 
         )
