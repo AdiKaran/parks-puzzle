@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {Container} from '@material-ui/core'
 import Cell from './cell';
-// import {ButtonGroup} from '@material-ui/core'
+import{cross, unitContains} from '../helpers';
 
 // Colors
 import { ThemeProvider, MuiThemeProvider } from "@material-ui/core/styles";
@@ -32,7 +32,7 @@ const colors = [
 ];
 
 /*
-State: {rows: [cols:{row:0, col: 0, park:p, value:'T'}... ]
+State: {rows: [index: i, cols:{row:0, col: 0, park:p, value:'T'}... ]
         trees: []
         }
 Props:
@@ -46,10 +46,6 @@ Peers:{A1:[Cells sharing a row, column or park with A1]}
 export default class Board extends Component{
     constructor(props){
         super(props) ;
-        // this.state={
-        //     rows : [],
-        //     trees : [],
-        // }
         let park = this.newPark();
         let json,rows, cols, parks, peers ;
         ({json,rows,cols,parks,peers} = this.parsePuzzle(park));
@@ -63,10 +59,23 @@ export default class Board extends Component{
     }
 
     render(){
+        const rows = this.state.rows;
         return (
           <Container>
-            <table key='board'>
-              <tbody>{this.renderBoard()}</tbody>
+            <table>
+              {rows.map((row) => (
+                <tr key={row.index}>
+                  {row.cols.map((col) => (
+                    <td>
+                      <ThemeProvider theme={colors[col.park]}>
+                        <MuiThemeProvider theme={colors[col.park]}>
+                          <Cell />
+                        </MuiThemeProvider>
+                      </ThemeProvider>
+                    </td>
+                  ))}
+                </tr>
+              ))}
             </table>
           </Container>
         );
@@ -116,7 +125,7 @@ export default class Board extends Component{
             rows.push([]);
             cols.push([]);
         }
-        squares = this.cross(rowArr,colArr)
+        squares = cross(rowArr,colArr)
         // Creating separate arrays for each park
         for(let i=0;i<size;i++){
             for(let j=0;j<size;j++ ){
@@ -130,21 +139,21 @@ export default class Board extends Component{
             // console.log(sq) ;
             let sq_peers = new Set()
             for(let row of rows){
-                if(this.unitContains(row,sq)){
+                if(unitContains(row,sq)){
                     for(let val of row){
                         sq_peers.add(val) ;
                     }
                 }
             }
             for(let col of cols){
-                if (this.unitContains(col, sq)) {
+                if (unitContains(col, sq)) {
                   for(let val of col){
                         sq_peers.add(val) ;
                     }
                 }
             }
             for(let park of parks){
-                if (this.unitContains(park, sq)) {
+                if (unitContains(park, sq)) {
                   for(let val of park){
                         sq_peers.add(val) ;
                     }
@@ -155,71 +164,6 @@ export default class Board extends Component{
         return({json:json,rows:rows,cols:cols,parks:parks,peers:peers})
     }
 
-    createBoard(){
-        // TODO:Throw error if size is too large
-        let puzzle, boardArr=[];
-        ({puzzle } = this.json);
-        for(let row of puzzle){
-            let rowArr = []
-            for(let color_id of row){
-                rowArr.push(
-                  <ThemeProvider theme={colors[color_id]}>
-                    <MuiThemeProvider theme={colors[color_id]}>
-                      <Cell/>
-                    </MuiThemeProvider>
-                  </ThemeProvider>
-                );                
-            }
-            boardArr.push(rowArr)
-        }
-        return boardArr
-    }
-
-    renderBoard(size){
-        let dataCount = 0;
-        let rowCount = 0;
-        let boardArr = this.createBoard() ;
-        let board = [] ;
-        for(let rowList of boardArr){
-            let row = []
-            for(let cell of rowList){
-                row.push(<td key={dataCount}> {cell} </td>);  
-                dataCount++ ;          
-            }
-            board.push(<tr key={"row" + rowCount.toString(10)}>{row}</tr>);
-            rowCount++;
-        }
-        return board
-    }
-
-    // Helpers 
-    cross(A,B){
-        let result = [];
-        for(let a of A){
-            for(let b of B){
-                result.push([a,b]);
-            }
-        }
-        return(result);
-    }
-    arrayEquals(A,B){
-        if (A === B) return true;
-        for (var i = 0; i < A.length; i++) {
-          if (A[i] !== B[i]) return false;
-        }
-        return true;
-    }
-
-    unitContains(A,b){
-        for(let a of A){
-            if(this.arrayEquals(a,b)){
-                return true;
-            }            
-        }
-        return false;
-    }
-
-    // Basic Gameplay Functions
 
     
 }
