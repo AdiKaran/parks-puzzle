@@ -33,27 +33,29 @@ const colors = [
 ];
 
 /*
-State: {rows: [index: i, cols:[{row:0, col: 0, park:p, value:'T'}...] ]
+State: parksPuzzle :
+        {rows: [index: i, cols:[{row:0, col: 0, park:p, value:'T'}...] ]
         trees: {
-            [0,0] : true,
-            [0.1] : false, ...
+            '[0,0]' : true,
+            '[0.1]' : false, ...
             }
-        tree_count: 0;
+        treeCount: 0;
         }
 Props:
 Rows:'ABCDEF...'
 Cols:'123456...'
-Units: { A1: [ [A1,A2,A3...],[A1,B1,C1...], [Cells sharing a park with A1]   ]}
-Peers:{A1:[Cells sharing a row, column or park with A1]}
+Units: { A1: [ [A1,A2,A3...],[A1,B1,C1...],[Cells sharing a park with A1],[cells next to A1]   ]}
+Peers:{A1:[Cells sharing a row, column,park with A1, and cells next to A1]}
 */
 
 export default class Board extends Component{
     constructor(props){
         super(props) ;
         let park = this.newPark();
-        let json,rows, cols, parks, peers ;
-        ({json,rows,cols,parks,peers} = this.parsePuzzle(park));
+        let json,squares,rows, cols, parks, peers ;
+        ({json,squares,rows,cols,parks,peers} = this.parsePuzzle(park));
         this.json = json ;  //TODO: pick a better name for the raw puzzle
+        this.squares = squares
         this.rows = rows ;
         this.cols = cols ;
         this.parks = parks ;
@@ -64,13 +66,12 @@ export default class Board extends Component{
           parksPuzzle: this.initialState(this.json),
         }));
         this.isSolved() ;
-        console.log(this.peers);
-
     }
 
     render(){
-        console.log(this.state.parksPuzzle.trees)
         const rows = this.state.parksPuzzle.rows;
+        const solved = this.isSolved() ;
+
         return (
           <Container>
             <table>
@@ -90,6 +91,7 @@ export default class Board extends Component{
                 ))}
               </tbody>
             </table>
+            <div><h3>Solved?</h3> <h4>{solved.toString()}</h4></div>
           </Container>
         );
     }
@@ -106,11 +108,11 @@ export default class Board extends Component{
                 draft.parksPuzzle.rows[i].cols[j].value = newVal;
                 if(val ==='T'){
                     draft.parksPuzzle.trees[[i,j].toString()] = false ;
-                    draft.parksPuzzle.treesCount--;
+                    draft.parksPuzzle.treeCount--;
                 }
                 else if(newVal === 'T'){
                     draft.parksPuzzle.trees[[i, j].toString()] = true;
-                    draft.parksPuzzle.treesCount++;
+                    draft.parksPuzzle.treeCount++;
                 }
             })
         )
@@ -126,11 +128,12 @@ export default class Board extends Component{
 
     newPark(){
         let park = {
-                size:3,
+                size:4,
                 puzzle:[
-                    [0,1,2],
-                    [1,0,2],
-                    [2,0,1],
+                    [0,0,0,0],
+                    [1,1,1,1],
+                    [2,2,2,2],
+                    [3,3,3,3],
                 ]
             }
         return(park) ;
@@ -180,39 +183,46 @@ export default class Board extends Component{
         }
         // Todo: optimize peer generation
         for(let sq of squares){
-            // console.log(sq) ;
+            let [a,b] = sq ;
             let sq_peers = new Set()
             for(let row of rows){
                 if(unitContains(row,sq)){
                     for(let val of row){
-                        sq_peers.add(val) ;
+                        sq_peers.add(val.toString()) ;
                     }
                 }
             }
             for(let col of cols){
                 if (unitContains(col, sq)) {
                   for(let val of col){
-                        sq_peers.add(val) ;
+                        sq_peers.add(val.toString()) ;
                     }
                 }
             }
             for(let park of parks){
                 if (unitContains(park, sq)) {
                   for(let val of park){
-                        sq_peers.add(val) ;
+                        sq_peers.add(val.toString()) ;
                     }
+                }
+            }
+            for(let i = (a-1);(i <= (a+1) && i<size);i++ ){
+                if(i<0){continue;}
+                for(let j = (b-1); (j<=(b+1) && j<size);j++ ){
+                    if(j<0){continue;}
+                    sq_peers.add([i,j].toString()) ;
                 }
             }
             peers[sq] = sq_peers ;            
         }
-        return({json:json,rows:rows,cols:cols,parks:parks,peers:peers})
+        return({json:json,squares:squares,rows:rows,cols:cols,parks:parks,peers:peers})
     }
     isSolved = () =>{
         let json = this.json ;
         let parksPuzzle = this.state.parksPuzzle
         let trees = this.state.parksPuzzle.trees ;
 
-        if(parksPuzzle.treesCount !== json.count){
+        if(parksPuzzle.treeCount !== json.size){
             return false ;
         }
         for(let key in trees ){ 
@@ -225,6 +235,11 @@ export default class Board extends Component{
             }
         }
         return true 
+    }
+    // Solving the current Board
+    solvePuzzle(){
+        // solves the puzzle based on the original json
+        // Does not take into account the current state of the board 
 
     }
 
