@@ -1,8 +1,15 @@
 import React, {Component} from 'react';
-import {Button, Container} from '@material-ui/core';
+import {Button,Box, Grid} from '@material-ui/core';
 import produce, {applyPatches} from 'immer';
 import Cell from './cell';
 import{cross, unitContains} from '../helpers';
+
+import * as puzzles from "../puzzles.json";
+
+// Icons
+import Undo from "@material-ui/icons/Undo";
+import RefreshIcon from "@material-ui/icons/Refresh";
+import EmojiObjectsIcon from "@material-ui/icons/EmojiObjects";
 
 // Colors
 import { ThemeProvider, MuiThemeProvider } from "@material-ui/core/styles";
@@ -51,7 +58,8 @@ Peers:{A1:[Cells sharing a row, column,park with A1, and cells next to A1]}
 export default class Board extends Component{
     constructor(props){
         super(props) ;
-        let park = this.newPark();
+        //TODO: set difficulty
+        let park = this.newPark(this.props.difficulty);
         let json,squares,rows, cols, parks, peers ;
         ({json,squares,rows,cols,parks,peers} = this.parsePuzzle(park));
         this.json = json ;  //TODO: pick a better name for the raw puzzle
@@ -76,33 +84,34 @@ export default class Board extends Component{
 
     render(){
         const rows = this.state.parksPuzzle.rows;
-        const solved = this.isSolved() ;
+        // const solved = this.isSolved() ;
         return (
-          <Container>
-            <table>
-              <tbody>
-                {rows.map((row) => (
-                  <tr key={row.index}>
-                    {row.cols.map((col) => (
-                      <td key={col.col}>
-                        <ThemeProvider theme={colors[col.park]}>
-                          <MuiThemeProvider theme={colors[col.park]}>
-                            <Cell cell={col} onClick={this.handleClick} />
-                          </MuiThemeProvider>
-                        </ThemeProvider>
-                      </td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
             <div>
-              <h3>Solved?</h3> <h4>{solved.toString()}</h4>
+            <Box className="boardBox">
+              <table>
+                <tbody>
+                  {rows.map((row) => (
+                    <tr key={row.index}>
+                      {row.cols.map((col) => (
+                        <td key={col.col}>
+                          <ThemeProvider theme={colors[col.park]}>
+                            <MuiThemeProvider theme={colors[col.park]}>
+                              <Cell cell={col} onClick={this.handleClick} />
+                            </MuiThemeProvider>
+                          </ThemeProvider>
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </Box>
+            <Grid className="boardButtons" container alignItems="center" justify="space-evenly">
+            <Button onClick={this.showSolution}startIcon={<EmojiObjectsIcon/>}>Solution</Button>
+            <Button onClick={this.refreshState} startIcon={<RefreshIcon/>}>Refresh</Button>
+            <Button onClick={this.handleUndo} startIcon={<Undo/>}>Undo</Button>
+            </Grid>
             </div>
-            <Button onClick={this.showSolution}>Show solution </Button>
-            <Button onClick={this.refreshState}>Refresh State </Button>
-            <Button onClick={this.handleUndo}>Undo</Button>
-          </Container>
         );
     }
 
@@ -161,18 +170,20 @@ export default class Board extends Component{
         index = (index + 1) % values.length;
         return values[index] ;
     }
-
-    newPark(){
-        let park = {
-                size:4,
-                puzzle:[
-                    [0,0,0,0],
-                    [1,1,1,1],
-                    [2,2,2,2],
-                    [3,3,3,3],
-                ]
-            }
-        return(park) ;
+    newPark(difficulty){
+        let puzzle;
+        switch(difficulty){
+            case 'easy':
+                puzzle = puzzles.easy[Math.floor(Math.random() * puzzles.easy.length)];
+                break ;
+            case 'medium':
+                puzzle = puzzles.medium[Math.floor(Math.random() * puzzles.medium.length)];
+                break ;
+            default :
+                puzzle = puzzles.noob[0]
+                break;
+        }
+        return puzzle
     }
     // parks json => initial state 
     initialState(json){

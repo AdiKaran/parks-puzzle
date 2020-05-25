@@ -28,11 +28,19 @@
   color: #61dafb;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.boardBox{
+    background-color: grey;
+}
+
+.boardButtons{
+    background-color: hotpink;
+}
+
+.parksGrid{
+    background-color: lightgreen;
+}
+
+.parksSideBar{
+    background-color: khaki;
+    width : 120px ;
 }
