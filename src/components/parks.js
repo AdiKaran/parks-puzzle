@@ -2,7 +2,11 @@ import React, {Component} from 'react';
 import produce from 'immer';
 
 import {Box,Grid} from '@material-ui/core'
+
+
 import Board from './board';
+
+
 
 export default class Parks extends Component{
     constructor(props){
@@ -16,7 +20,7 @@ export default class Parks extends Component{
         return(
             <Box mt='5rem'>
             <Grid className='parksGrid' container direction='row' justify="center" alignItems="center" wrap='nowrap'>
-                <Board gameCount={this.state.gameCount} menuHandler={this.menuHandler} difficulty={this.state.difficulty}/>
+                <Board key={"game"+this.state.gameCount} gameCount={this.state.gameCount} menuHandler={this.menuHandler} difficulty={this.state.difficulty}/>
             </Grid>
             </Box>
         )
