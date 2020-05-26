@@ -1,4 +1,4 @@
-##React Parks Puzzle Game
+## React Parks Puzzle Game
 
 User friendly Parks Puzzle Web App 
 
