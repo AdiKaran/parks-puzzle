@@ -1,8 +1,10 @@
 import React, {Component} from 'react';
-import {Button,Box, Grid} from '@material-ui/core';
+import {Button,Box,Grid} from '@material-ui/core';
 import produce, {applyPatches} from 'immer';
 import Cell from './cell';
 import{cross, unitContains} from '../helpers';
+import NewGameMenu from "./newgamemenu";
+import RulesPopUp from './rulespopup'
 
 import * as puzzles from "../puzzles.json";
 
@@ -84,36 +86,85 @@ export default class Board extends Component{
 
     render(){
         const rows = this.state.parksPuzzle.rows;
-        // const solved = this.isSolved() ;
         return (
-            <div>
-            <Box className="boardBox">
-              <table>
-                <tbody>
-                  {rows.map((row) => (
-                    <tr key={row.index}>
-                      {row.cols.map((col) => (
-                        <td key={col.col}>
-                          <ThemeProvider theme={colors[col.park]}>
-                            <MuiThemeProvider theme={colors[col.park]}>
-                              <Cell cell={col} onClick={this.handleClick} />
-                            </MuiThemeProvider>
-                          </ThemeProvider>
-                        </td>
-                      ))}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </Box>
-            <Grid className="boardButtons" container alignItems="center" justify="space-evenly">
-            <Button onClick={this.showSolution}startIcon={<EmojiObjectsIcon/>}>Solution</Button>
-            <Button onClick={this.refreshState} startIcon={<RefreshIcon/>}>Refresh</Button>
-            <Button onClick={this.handleUndo} startIcon={<Undo/>}>Undo</Button>
+          <Grid
+            className="boardGrid"
+            container
+            direction="row"
+            justify="center"
+          >
+            <Grid>
+              <Box className="boardBox">
+                <table>
+                  <tbody>
+                    {rows.map((row) => (
+                      <tr key={row.index}>
+                        {row.cols.map((col) => (
+                          <td key={col.col}>
+                            <ThemeProvider theme={colors[col.park]}>
+                              <MuiThemeProvider theme={colors[col.park]}>
+                                <Cell cell={col} onClick={this.handleClick} />
+                              </MuiThemeProvider>
+                            </ThemeProvider>
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </Box>
+              <Grid
+                className="boardButtons"
+                container
+                alignItems="center"
+                justify="space-evenly"
+              >
+                <Button
+                  onClick={this.showSolution}
+                  startIcon={<EmojiObjectsIcon />}
+                >
+                  Solution
+                </Button>
+                <Button onClick={this.refreshState} startIcon={<RefreshIcon />}>
+                  Refresh
+                </Button>
+                <Button onClick={this.handleUndo} startIcon={<Undo />}>
+                  Undo
+                </Button>
+              </Grid>
             </Grid>
-            </div>
+            {/* <div className="boardSideBar"> */}
+            <Box
+              className="boardSideBar"
+              border={1}
+              borderColor="#303030"
+              borderRadius={4}
+            >
+              {/* <div className="boardSideBar"> */}
+              {/* <div className="boardSideBarButtonContainer">
+                <Button className="boardSideBarButton">Timer</Button>
+              </div> */}
+              <div className="boardSideBarButtonContainer">
+                <NewGameMenu
+                  menuHandler={this.menuHandler}
+                  className="boardSideBarButton"
+                />
+              </div>
+              <div className="boardSideBarButtonContainer">
+                <RulesPopUp />
+              </div>
+              {/* </div> */}
+            </Box>
+            {/* </div> */}
+          </Grid>
         );
     }
+    componentDidUpdate(prevProps){
+        if(this.props.gameCount !== prevProps.gameCount){
+            console.log("New Game initiated")
+        }
+    }
+    
 
     handleClick = (e) =>{
         let i, j , val, newVal;
@@ -138,6 +189,9 @@ export default class Board extends Component{
                 this.inverseChanges.push(inversePatches);
             })
         )
+    }
+    menuHandler = (difficulty) =>{
+        this.props.menuHandler(difficulty);
     }
     refreshState = () =>{
         this.setState(applyPatches(this.state,this.inverseChanges.flat()));

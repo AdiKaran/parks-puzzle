@@ -1,21 +1,32 @@
 import React, {Component} from 'react';
+import produce from 'immer';
 
-import {Button,Grid} from '@material-ui/core'
+import {Box,Grid} from '@material-ui/core'
 import Board from './board';
 
 export default class Parks extends Component{
+    constructor(props){
+        super(props);
+        this.state = produce({}, () => ({
+          difficulty: 'medium',
+          gameCount:0
+        }));
+    }
     render(){
         return(
+            <Box mt='5rem'>
             <Grid className='parksGrid' container direction='row' justify="center" alignItems="center" wrap='nowrap'>
-                <div>
-                <Board difficulty='easy'/>
-                </div>                
-                <Grid className="parksSideBar" width='10%' container direction='column'>
-                    <Button>Timer </Button>
-                    <Button>New Game</Button>
-                    <Button>Rules </Button>
-                </Grid>
+                <Board gameCount={this.state.gameCount} menuHandler={this.menuHandler} difficulty={this.state.difficulty}/>
             </Grid>
+            </Box>
+        )
+    }
+    menuHandler = (difficulty) =>{
+        this.setState(
+            produce(this.state, (draft) =>{
+                draft.difficulty = difficulty ;
+                draft.gameCount++;
+            })
         )
     }
 }
