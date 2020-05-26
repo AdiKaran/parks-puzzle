@@ -1,6 +1,6 @@
 ## React Parks Puzzle Game
 
-User friendly Parks Puzzle Web App 
+user friendly Parks Puzzle web app 
 
 ### Develop
 '''
