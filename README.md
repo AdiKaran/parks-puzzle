@@ -3,7 +3,7 @@
 user friendly Parks Puzzle web app 
 
 ### Develop
-'''
+'''bash
 npm install
 npm start
 '''
