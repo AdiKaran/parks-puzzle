@@ -2,8 +2,7 @@
 
 user friendly Parks Puzzle web app 
 
-## [Play](https://adikaran.github.io/parks-puzzle/)
-
+[Check it out Now](https://adikaran.github.io/parks-puzzle/)
 
 ### Develop
 ```
