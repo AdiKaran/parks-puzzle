@@ -2,6 +2,9 @@
 
 user friendly Parks Puzzle web app 
 
+## [Play](https://adikaran.github.io/parks-puzzle/)
+
+
 ### Develop
 ```
 npm install
