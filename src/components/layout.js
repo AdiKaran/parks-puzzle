@@ -36,7 +36,7 @@ export default function Layout() {
             onKeyDown={toggleDrawer('drawerOpen', false)}
             >
             <List>
-                <ListItem button key="My Profile">                    
+                <ListItem button onClick={console.log("click!")} key="My Profile">                    
                     <ListItemIcon>
                     <PersonIcon />
                     </ListItemIcon>
