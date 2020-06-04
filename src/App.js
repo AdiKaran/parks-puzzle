@@ -2,14 +2,13 @@ import React, {Component} from 'react';
 import './App.css';
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Layout from './components/layout';
-import Parks from './components/parks';
 
 import { createMuiTheme } from "@material-ui/core/";
 import { MuiThemeProvider } from "@material-ui/core/styles";
 
 // Routing
 // import {Link} from 'react-router-dom';
-// import Main  from './components/main'
+import Main  from './components/main'
 // Enable immer patches
 import {enablePatches} from 'immer'
 enablePatches()
@@ -27,7 +26,7 @@ export default class App extends Component {
             <MuiThemeProvider theme={darkTheme}>
             <CssBaseline/>
                 <Layout />
-                <Parks />                
+                <Main />                
             </MuiThemeProvider>
             </div>
         );

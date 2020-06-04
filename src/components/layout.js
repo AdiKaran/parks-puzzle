@@ -1,5 +1,7 @@
 import React, {useState} from 'react';
 
+import {Link} from 'react-router-dom'
+
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
@@ -12,7 +14,8 @@ import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import PersonIcon from "@material-ui/icons/Person";
-import MailIcon from "@material-ui/icons/Mail";
+import GitHubIcon from "@material-ui/icons/GitHub";
+import LinkedInIcon from "@material-ui/icons/LinkedIn";
 
 export default function Layout() {
 
@@ -28,26 +31,54 @@ export default function Layout() {
   };
     return (
       <div>
-        <Drawer  anchor='left' open={state['drawerOpen']} onClose={toggleDrawer('drawerOpen', false)}  >
-            {/* Drawer Contents  */}
-            <div
+        <Drawer
+          anchor="left"
+          open={state["drawerOpen"]}
+          onClose={toggleDrawer("drawerOpen", false)}
+        >
+          {/* Drawer Contents  */}
+          <div
             role="presentation"
-            onClick={toggleDrawer('drawerOpen', false)}
-            onKeyDown={toggleDrawer('drawerOpen', false)}
-            >
+            onClick={toggleDrawer("drawerOpen", false)}
+            onKeyDown={toggleDrawer("drawerOpen", false)}
+          >
             <List>
-                <ListItem button onClick={console.log("click!")} key="My Profile">                    
-                    <ListItemIcon>
-                    <PersonIcon />
-                    </ListItemIcon>
-                    <ListItemText primary="My Profile" />
-                </ListItem>     
-                <ListItem button key="Contact Me">
-                    <ListItemIcon>
-                    <MailIcon />
-                    </ListItemIcon>
-                    <ListItemText primary="Contact Me" />                    
-                </ListItem>             
+              <ListItem
+                button
+                key="My Profile"
+                component={Link}
+                to={"/profile"}
+                target="_blank"
+              >
+                <ListItemIcon>
+                  <PersonIcon />
+                </ListItemIcon>
+                <ListItemText primary="My Profile" />
+              </ListItem>
+              <ListItem
+                button
+                key="Github"
+                component={Link}
+                to={"/github"}
+                target="_blank"
+              >
+                <ListItemIcon>
+                  <GitHubIcon />
+                </ListItemIcon>
+                <ListItemText primary="Github" />
+              </ListItem>
+              <ListItem
+                button
+                key="Linkedin"
+                component={Link}
+                to={"/linkedin"}
+                target="_blank"
+              >
+                <ListItemIcon>
+                  <LinkedInIcon />
+                </ListItemIcon>
+                <ListItemText primary="Linkedin" />
+              </ListItem>
             </List>
             <Divider />
             {/* <List>
@@ -60,24 +91,22 @@ export default function Layout() {
                 </ListItem>
                 ))}
             </List> */}
-            </div>
+          </div>
         </Drawer>
 
-        <AppBar color="#fff"className="appBar" position="static">
+        <AppBar color="#fff" className="appBar" position="static">
           <Toolbar variant="regular">
             <IconButton
               edge="start"
-              onClick={toggleDrawer('drawerOpen', true)}
+              onClick={toggleDrawer("drawerOpen", true)}
               color="inherit"
               aria-label="menu"
             >
               <MenuIcon />
             </IconButton>
-            <Typography variant="h6" >
-              Parks Puzzle
-            </Typography>
+            <Typography variant="h6">Parks Puzzle</Typography>
           </Toolbar>
         </AppBar>
       </div>
-    ) 
+    ); 
 }
